@@ -14,6 +14,7 @@ if __name__ == '__main__':
     from numpy.distutils.core import setup
 
     setup(name='python-dftd3',
+          version='0.1.0',
           description='D3 dispersion correction calculation with python',
           author='Peter Spackman',
           author_email='peterspackman@fastmail.com',

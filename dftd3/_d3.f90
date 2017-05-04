@@ -1,7 +1,20 @@
+! Copyright (C) 2017, Peter Spackman
+! 
+! This program is free software; you can redistribute it and/or modify
+! it under the terms of the GNU General Public License as published by
+! the Free Software Foundation; either version 3, or (at your option)
+! any later version.
+!
+! This program is distributed in the hope that it will be useful,
+! but WITHOUT ANY WARRANTY; without even the implied warranty of
+! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+! GNU General Public License for more details.
+!
+! For the GNU General Public License, see <http://www.gnu.org/licenses/>
+
 module d3
 
     use dftd3_api
-
     implicit none
 
     private
@@ -18,23 +31,20 @@ contains
       type(dftd3_input) :: input
       type(dftd3_calc) :: dftd3
 
-      !! Threebody interactions (default: .false.)
+      ! the following setup may be subject to some minor change
+
+      ! Threebody interactions
       input%threebody = .true.
 
-      !! Numerical gradients (default: .false.)
+      ! Numerical gradients
       input%numgrad = .false.
 
-      !! Cutoffs (below you find the defaults)
+      ! Cutoffs
       input%cutoff = sqrt(9000.0d0)
       input%cutoff_cn = sqrt(1600.0d0)
 
       call dftd3_init(dftd3, input)
-      ! Choose functional. Alternatively you could set the parameters manually
-      ! by the dftd3_set_params() function.
-
       call dftd3_set_params(dftd3, [s6, rs6, s18, rs18, alp], version)
-
-      ! Calculate dispersion and gradients for non-periodic case
       call dftd3_dispersion(dftd3, coords, atomic_numbers, edisp, grads)
 
     end subroutine

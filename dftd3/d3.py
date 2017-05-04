@@ -1,3 +1,21 @@
+"""
+Copyright (C) 2017, Peter Spackman
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
 import numpy as np
 from dftd3._d3 import d3
 
@@ -118,6 +136,16 @@ bj_damping_parameters = {
 
 
 def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
+    """
+    atomic positions in bohr, with columns each belonging to atoms
+
+    Example:
+
+    >>> n = np.array([8, 1, 1], dtype=int)
+    >>> xyz = np.array([[0,0,0],[0, 1.42759927, -1.42759927],[0.22259084, -0.89036525, -0.89036525]])
+    >>> d3_correction(n, xyz, func='b-lyp')
+    -0.0007192450506757604
+    """
     alp = 14.0
     version = versions[variant]
 
