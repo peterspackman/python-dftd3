@@ -9,12 +9,10 @@ module d3
 
 contains
 
-    subroutine d3_calc(n_atoms, atomic_numbers, coords, func, bj, edisp, grads)
+    subroutine d3_calc(n_atoms, atomic_numbers, coords, s6, s18, rs6, rs18, alp, version, edisp, grads)
         !f2py threadsafe
-      integer, intent(in) :: n_atoms, atomic_numbers(n_atoms)
-      character(len=*) :: func
-      double precision, intent(in) :: coords(3, n_atoms)
-      logical, intent(in) :: bj
+      integer, intent(in) :: n_atoms, atomic_numbers(n_atoms), version
+      double precision, intent(in) :: s6, s18, rs6, rs18, alp, coords(3, n_atoms)
       double precision, intent(out) :: edisp, grads(3, n_atoms)
 
       type(dftd3_input) :: input
@@ -33,7 +31,8 @@ contains
       call dftd3_init(dftd3, input)
       ! Choose functional. Alternatively you could set the parameters manually
       ! by the dftd3_set_params() function.
-      call dftd3_set_functional(dftd3, func=func, version=4, tz=.false.)
+
+      call dftd3_set_params(dftd3, [s6, rs6, s18, rs18, alp], version)
 
       ! Calculate dispersion and gradients for non-periodic case
       call dftd3_dispersion(dftd3, coords, atomic_numbers, edisp, grads)

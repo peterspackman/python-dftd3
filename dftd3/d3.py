@@ -1,13 +1,18 @@
 import numpy as np
 from dftd3._d3 import d3
 
-dispersion_correction = d3.d3_calc
-Bohr = 0.5291772105638411 
-alp = 14.
+dft_dispersion_correction = d3.d3_calc
 
-# D3 damping parameters
-#                            (RS6  , S18   , RS18 , S6  )
-damp0 = {
+versions = {
+    'bj': 6, # DFT-D3 with Becke-Johnson damping parameters
+    'zero': 5, # DFT-D3 with zero damping parameters
+    'finite': 4, # DFT-D3 with Becke-Johnson finite-damping, variant 2 with their radii
+    'none': 3, # DFT-D3 with no damping
+    'D2': 2, # DFT-D2
+}
+
+# Parameters are as follows: (rs6, s18, rs18 ,s6)
+zero_damping_parameters = {
     'slater-dirac-exchange': (0.999, -1.957, 0.697, 1.00),
     'b-lyp':                 (1.094, 1.6820, 1.000, 1.00),
     'b-p':                   (1.139, 1.6830, 1.000, 1.00),
@@ -61,7 +66,7 @@ damp0 = {
 
 # D3(BJ) damping parameters
 #                    (RS6    , S18    , RS18  , S6  )
-dampbj = {
+bj_damping_parameters = {
     'b-p':           (0.39460, 3.28220, 4.8516, 1.00),
     'b-lyp':         (0.42980, 2.69960, 4.2359, 1.00),
     'revpbe':        (0.52380, 2.35500, 3.5016, 1.00),
@@ -111,35 +116,35 @@ dampbj = {
     }
 
 
-implemented_properties = ['energy', 'forces', 'stress']
-default_parameters = {'xc': 'pbe',
-                      'bj': True,
-                      'threebody': True,
-                      'rcut': 95 * Bohr, # bohr radius
-                      'rcutcn': 40 * Bohr,
-                      'rs6': None,
-                      's18': None,
-                      'rs18': None,
-                      's6': None}
 
+def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
+    alp = 14.0
+    version = versions[variant]
 
-def d3_correction(atoms):
-    bj = True
-    energy, forces = dispersion_correction(
-            atoms.as_atomic_numbers(),
-            atoms.as_coordinate_matrix(units='bohr').T,
-            'b-lyp',
-            bj)
-    print('E(disp) = ', energy)
-    print('F(disp) = ', forces)
+    if variant == 'bj':
+        rs6, s18, rs18, s6 = bj_damping_parameters[func]
+    elif variant == 'zero':
+        rs6, s18, rs18, s6 = zero_damping_parameters[func]
+
+    energy, forces = dft_dispersion_correction(
+            atomic_numbers,
+            atomic_positions,
+            s6, s18, rs6, rs18, alp, version)
+
     return energy 
 
 
 def test_d3():
     from qcpy.tests.test_geometry import H2O
-    e = d3_correction(H2O)
-    print('Should be: ', 0.00071925)
-    return e == 0.00071925
+    from math import isclose
+    e = d3_correction(
+            H2O.as_atomic_numbers(),
+            H2O.as_coordinate_matrix(units='bohr').T,
+            func='b-lyp')
+    return isclose(e, -0.00071925, abs_tol=0.0000001)
 
 if __name__ == '__main__':
-    test_d3()
+    if test_d3():
+        print('Working')
+    else:
+        print('Failed')
