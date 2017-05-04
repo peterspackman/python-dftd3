@@ -1,0 +1,23 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module _d3 ! in 
+    interface  ! in :_d3
+        module d3 ! in :_d3:_d3.f90
+            use dftd3_api
+            subroutine d3_calc(n_atoms,atomic_numbers,coords,func,bj,edisp,grads) ! in :_d3:_d3.f90:d3
+                threadsafe 
+                integer, optional,intent(in),check(len(atomic_numbers)>=n_atoms),depend(atomic_numbers) :: n_atoms=len(atomic_numbers)
+                integer dimension(n_atoms),intent(in) :: atomic_numbers
+                double precision dimension(3,n_atoms),intent(in),depend(n_atoms) :: coords
+                character*(*) :: func
+                logical intent(in) :: bj
+                double precision intent(out) :: edisp
+                double precision dimension(3,n_atoms),intent(out),depend(n_atoms) :: grads
+            end subroutine d3_calc
+        end module d3
+    end interface 
+end python module _d3
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

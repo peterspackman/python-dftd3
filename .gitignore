@@ -1,0 +1,7 @@
+dftd3/_d3-f2pywrappers2.f90
+dftd3/_d3module.c
+*.pyc
+build
+*.egg-info
+*.cpython-*
+*.swp
