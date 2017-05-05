@@ -20,6 +20,7 @@ import numpy as np
 from dftd3._d3 import d3
 
 dft_dispersion_correction = d3.d3_calc
+periodic_dispersion_correction = d3.periodic_d3_calc
 
 versions = {
     'bj': 6, # DFT-D3 with Becke-Johnson damping parameters
@@ -197,4 +198,75 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
             s6, s18, rs6, rs18, alp, version_id)
 
     return energy, forces
+
+
+# TODO references
+def periodic_d3_correction(atomic_numbers, atomic_positions, cell_vectors, func='pbe', variant='bj'):
+    """Calculate the D2/D3 dispersion correction for a given periodic set of atoms.
+
+    Grimme et al. dispersion corrections.
+
+    Parameters
+    ----------
+
+    atomic_numbers : array_like 
+        A set of atomic numbers of shape ``(N,) ``. 
+
+    atomic_positions : array_like
+        Set of atomic positions in atomic units (bohr) 
+        of shape ``(N,3)``
+
+    cell_vectors : array_like
+        Set of unit cell vectors in atomic units (bohr)
+        of shape ``(3,3)``
+
+    func : {'pbe'}, optional
+        Choice of functional to use for this calculation (as given in)
+
+    variant : {'bj', 'zero', 'd2'}, optional
+        Choice of functional to use for this calculation (as given in)
+
+
+    Returns
+    -------
+    results : dict
+        The dispersion energy of the system (`edisp`) and the force on
+        each atom (`grad`)
+    
+
+    Example:
+
+    >>> n = [8, 1, 1]
+    >>> xyz = [[0, 0, 0.222590804],[0, 1.42759927, -0.89036525],[0, -1.42759927, -0.89036525]]
+    >>> cell = [[10,0,0], [0,10,0], [0,0,10]]
+    >>> edisp, forces, stress = periodic_d3_correction(n, xyz, cell, func='b-lyp')
+    >>> edisp
+    -0.001003511669637431
+    >>> stress
+    array([[ -4.90269691e-07,   8.86062624e-24,  -2.59065249e-23],
+           [  1.39428235e-23,  -7.43729438e-07,  -8.81825353e-24],
+           [ -2.08238107e-23,  -1.00894981e-23,  -5.39744195e-07]])
+    """
+
+    alp = 14.0
+    version_id = versions[variant]
+
+    if variant == 'bj':
+        rs6, s18, rs18, s6 = bj_damping_parameters[func]
+    elif variant == 'zero':
+        rs6, s18, rs18, s6 = zero_damping_parameters[func]
+    else:
+        raise NotImplementedError('Only BJ and zero damping cases are implemented')
+
+    atomic_numbers = np.array(atomic_numbers, dtype=int)
+    atomic_positions = np.array(atomic_positions, dtype=np.float64).T
+    cell_vectors = np.array(cell_vectors, dtype=np.float64).T
+
+    energy, forces, stress = periodic_dispersion_correction(
+            atomic_numbers,
+            atomic_positions,
+            cell_vectors,
+            s6, s18, rs6, rs18, alp, version_id)
+
+    return energy, forces, stress
 

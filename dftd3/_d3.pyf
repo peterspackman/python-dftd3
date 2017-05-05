@@ -19,6 +19,22 @@ python module _d3 ! in
                 double precision intent(out) :: edisp
                 double precision dimension(3,n_atoms),intent(out),depend(n_atoms) :: grads
             end subroutine d3_calc
+            subroutine periodic_d3_calc(n_atoms,atomic_numbers,coords,cell,s6,s18,rs6,rs18,alp,version,edisp,grads,stress) ! in :_d3:_d3.f90:d3
+                threadsafe 
+                integer, optional,intent(in),check(len(atomic_numbers)>=n_atoms),depend(atomic_numbers) :: n_atoms=len(atomic_numbers)
+                integer dimension(n_atoms),intent(in) :: atomic_numbers
+                double precision dimension(3,n_atoms),intent(in),depend(n_atoms) :: coords
+                double precision dimension(3,3),intent(in) :: cell
+                double precision intent(in) :: s6
+                double precision intent(in) :: s18
+                double precision intent(in) :: rs6
+                double precision intent(in) :: rs18
+                double precision intent(in) :: alp
+                integer intent(in) :: version
+                double precision intent(out) :: edisp
+                double precision dimension(3,n_atoms),intent(out),depend(n_atoms) :: grads
+                double precision dimension(3,3),intent(out) :: stress
+            end subroutine periodic_d3_calc
         end module d3
     end interface 
 end python module _d3

@@ -18,7 +18,7 @@ module d3
     implicit none
 
     private
-    public d3_calc
+    public d3_calc, periodic_d3_calc
 
 contains
 
@@ -48,6 +48,34 @@ contains
       call dftd3_dispersion(dftd3, coords, atomic_numbers, edisp, grads)
 
     end subroutine
+
+    subroutine periodic_d3_calc(n_atoms, atomic_numbers, coords, cell, s6, s18, rs6, rs18, alp, version, edisp, grads, stress)
+        !f2py threadsafe
+      integer, intent(in) :: n_atoms, atomic_numbers(n_atoms), version
+      double precision, intent(in) :: s6, s18, rs6, rs18, alp, coords(3, n_atoms), cell(3,3)
+      double precision, intent(out) :: edisp, grads(3, n_atoms), stress(3,3)
+
+      type(dftd3_input) :: input
+      type(dftd3_calc) :: dftd3
+
+      ! the following setup may be subject to some minor change
+
+      ! Threebody interactions
+      input%threebody = .true.
+
+      ! Numerical gradients
+      input%numgrad = .false.
+
+      ! Cutoffs
+      input%cutoff = sqrt(9000.0d0)
+      input%cutoff_cn = sqrt(1600.0d0)
+
+      call dftd3_init(dftd3, input)
+      call dftd3_set_params(dftd3, [s6, rs6, s18, rs18, alp], version)
+      call dftd3_pbc_dispersion(dftd3, coords, atomic_numbers, &
+                                cell, edisp, grads, stress)
+    end subroutine
+
 
 
 end module d3
