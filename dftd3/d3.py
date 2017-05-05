@@ -135,7 +135,7 @@ bj_damping_parameters = {
     }
 
 
-
+# TODO references
 def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
     """Calculate the D2/D3 dispersion correction for a given set of atoms.
 
@@ -160,16 +160,23 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
 
     Returns
     -------
-    energy : float
-        The dispersion energy of the system
+    results : dict
+        The dispersion energy of the system (`edisp`) and the force on
+        each atom (`grad`)
     
 
     Example:
 
     >>> n = [8, 1, 1]
     >>> xyz = [[0, 0, 0.222590804],[0, 1.42759927, -0.89036525],[0, -1.42759927, -0.89036525]]
-    >>> d3_correction(n, xyz, func='b-lyp')
+    >>> edisp, _ = d3_correction(n, xyz, func='b-lyp')
+    >>> edisp
     -0.0007192450505684787
+    >>> _, forces = d3_correction(n, xyz, func='ptpss')
+    >>> forces
+    array([[  0.00000000e+00,   0.00000000e+00,   0.00000000e+00],
+           [  0.00000000e+00,  -1.45090469e-08,   1.45090469e-08],
+           [ -6.01894727e-07,   3.00947363e-07,   3.00947363e-07]])
     """
     alp = 14.0
     version_id = versions[variant]
@@ -182,12 +189,12 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
         raise NotImplementedError('Only BJ and zero damping cases are implemented')
 
     atomic_numbers = np.array(atomic_numbers, dtype=int)
-    atomic_positions = np.array(atomic_positions, dtype=float).T
+    atomic_positions = np.array(atomic_positions, dtype=np.float64).T
 
     energy, forces = dft_dispersion_correction(
             atomic_numbers,
             atomic_positions,
             s6, s18, rs6, rs18, alp, version_id)
 
-    return energy 
+    return energy, forces
 
