@@ -29,6 +29,7 @@ versions = {
     'D2': 2, # DFT-D2
 }
 
+# TODO parameters for other variants
 # Parameters are as follows: (rs6, s18, rs18 ,s6)
 zero_damping_parameters = {
     'slater-dirac-exchange': (0.999, -1.957, 0.697, 1.00),
@@ -136,43 +137,57 @@ bj_damping_parameters = {
 
 
 def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
-    """
-    atomic positions in bohr, with columns each belonging to atoms
+    """Calculate the D2/D3 dispersion correction for a given set of atoms.
+
+    Grimme et al. dispersion corrections.
+
+    Parameters
+    ----------
+
+    atomic_numbers : array_like 
+        A set of atomic numbers of shape ``(N,) ``. 
+
+    atomic_positions : array_like
+        Set of atomic positions in atomic units (bohr) 
+        of shape ``(N,3)``
+
+    func : {'pbe'}, optional
+        Choice of functional to use for this calculation (as given in)
+
+    variant : {'bj', 'zero', 'd2'}, optional
+        Choice of functional to use for this calculation (as given in)
+
+
+    Returns
+    -------
+    energy : float
+        The dispersion energy of the system
+    
 
     Example:
 
-    >>> n = np.array([8, 1, 1], dtype=int)
-    >>> xyz = np.array([[0,0,0],[0, 1.42759927, -1.42759927],[0.22259084, -0.89036525, -0.89036525]])
+    >>> n = [8, 1, 1]
+    >>> xyz = [[0, 0, 0.222590804],[0, 1.42759927, -0.89036525],[0, -1.42759927, -0.89036525]]
     >>> d3_correction(n, xyz, func='b-lyp')
-    -0.0007192450506757604
+    -0.0007192450505684787
     """
     alp = 14.0
-    version = versions[variant]
+    version_id = versions[variant]
 
     if variant == 'bj':
         rs6, s18, rs18, s6 = bj_damping_parameters[func]
     elif variant == 'zero':
         rs6, s18, rs18, s6 = zero_damping_parameters[func]
+    else:
+        raise NotImplementedError('Only BJ and zero damping cases are implemented')
+
+    atomic_numbers = np.array(atomic_numbers, dtype=int)
+    atomic_positions = np.array(atomic_positions, dtype=float).T
 
     energy, forces = dft_dispersion_correction(
             atomic_numbers,
             atomic_positions,
-            s6, s18, rs6, rs18, alp, version)
+            s6, s18, rs6, rs18, alp, version_id)
 
     return energy 
 
-
-def test_d3():
-    from qcpy.tests.test_geometry import H2O
-    from math import isclose
-    e = d3_correction(
-            H2O.as_atomic_numbers(),
-            H2O.as_coordinate_matrix(units='bohr').T,
-            func='b-lyp')
-    return isclose(e, -0.00071925, abs_tol=0.0000001)
-
-if __name__ == '__main__':
-    if test_d3():
-        print('Working')
-    else:
-        print('Failed')
