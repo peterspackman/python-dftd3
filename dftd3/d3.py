@@ -148,8 +148,7 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
     ----------
 
     atomic_numbers : array_like 
-        A set of atomic numbers of shape ``(N,) ``. 
-
+        A set of atomic numbers of shape ``(N,) ``.  
     atomic_positions : array_like
         Set of atomic positions in atomic units (bohr) 
         of shape ``(N,3)``

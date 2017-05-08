@@ -18,5 +18,10 @@ if __name__ == '__main__':
           description='D3 dispersion correction calculation with python',
           author='Peter Spackman',
           author_email='peterspackman@fastmail.com',
+          entry_points={
+              'console_scripts': [
+                  'python-dftd3 = dftd3.cli:main',
+              ]
+          },
           install_requires=['numpy'],
           configuration=configuration)
