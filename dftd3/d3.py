@@ -32,7 +32,9 @@ versions = {
 
 # TODO parameters for other variants
 # Parameters are as follows: (rs6, s18, rs18 ,s6)
-zero_damping_parameters = {
+parameters = {}
+
+parameters['zero'] = {
     'slater-dirac-exchange': (0.999, -1.957, 0.697, 1.00),
     'b-lyp':                 (1.094, 1.6820, 1.000, 1.00),
     'b-p':                   (1.139, 1.6830, 1.000, 1.00),
@@ -86,7 +88,7 @@ zero_damping_parameters = {
 
 # D3(BJ) damping parameters
 #                    (RS6    , S18    , RS18  , S6  )
-bj_damping_parameters = {
+parameters['bj'] = {
     'b-p':           (0.39460, 3.28220, 4.8516, 1.00),
     'b-lyp':         (0.42980, 2.69960, 4.2359, 1.00),
     'revpbe':        (0.52380, 2.35500, 3.5016, 1.00),
@@ -182,10 +184,8 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
     alp = 14.0
     version_id = versions[variant]
 
-    if variant == 'bj':
-        rs6, s18, rs18, s6 = bj_damping_parameters[func]
-    elif variant == 'zero':
-        rs6, s18, rs18, s6 = zero_damping_parameters[func]
+    if variant in {'bj', 'zero'}:
+        rs6, s18, rs18, s6 = parameters[variant][func]
     else:
         raise NotImplementedError('Only BJ and zero damping cases are implemented')
 
@@ -251,10 +251,8 @@ def periodic_d3_correction(atomic_numbers, atomic_positions, cell_vectors, func=
     alp = 14.0
     version_id = versions[variant]
 
-    if variant == 'bj':
-        rs6, s18, rs18, s6 = bj_damping_parameters[func]
-    elif variant == 'zero':
-        rs6, s18, rs18, s6 = zero_damping_parameters[func]
+    if variant in {'bj', 'zero'}:
+        rs6, s18, rs18, s6 = parameters[variant][func]
     else:
         raise NotImplementedError('Only BJ and zero damping cases are implemented')
 
