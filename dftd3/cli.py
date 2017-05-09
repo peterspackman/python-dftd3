@@ -3,6 +3,8 @@ import numpy as np
 import logging
 from dftd3 import d3_correction
 
+LOG = logging.getLogger(__name__)
+
 BOHR = 0.5291772105638411
 
 elements = [
@@ -113,20 +115,24 @@ elements = [
 
 def parse_xyz(lines):
     n = 0
-    for i, line in enumerate(lines):
-        if i == 0:
-            n = int(line.strip())
-            coords = np.zeros(3 * n, dtype=float).reshape(n, 3)
-            atoms = np.zeros(n, dtype=int)
-        elif i == 1:
-            pass
-        else:
-            symbol, x, y, z = line.strip().split()
-            atoms[i - 2] = elements.index(symbol) + 1
-            coords[i - 2, :] = [float(x), float(y), float(z)]
+    total_lines = len(lines)
+    num, comment, *atom_lines = lines
+    n = int(num.strip())
+    if len(lines) != n + 2:
+        LOG.warn('Incorrect number of lines in file')
+
+    coords = np.zeros(3 * n, dtype=float).reshape(n, 3)
+    atoms = np.zeros(n, dtype=int)
+
+    for i, line in enumerate(atom_lines):
+        symbol, x, y, z = line.strip().split()
+        atoms[i] = elements.index(symbol) + 1
+        coords[i, :] = [float(x), float(y), float(z)]
     return atoms, coords
 
+
 def read_xyz(filename):
+    LOG.debug('Reading lines from %s', filename)
     with open(filename) as f:
         return f.readlines()
 
