@@ -172,7 +172,7 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
 
     >>> n = [8, 1, 1]
     >>> xyz = [[0, 0, 0.222590804],[0, 1.42759927, -0.89036525],[0, -1.42759927, -0.89036525]]
-    >>> edisp, _ = d3_correction(n, xyz, func='b-lyp')
+    >>> edisp, _ = d3_correction(n, xyz, func='blyp')
     >>> edisp
     -0.0007192450505684787
     >>> _, forces = d3_correction(n, xyz, func='ptpss')
@@ -240,7 +240,7 @@ def periodic_d3_correction(atomic_numbers, atomic_positions, cell_vectors, func=
     >>> n = [8, 1, 1]
     >>> xyz = [[0, 0, 0.222590804],[0, 1.42759927, -0.89036525],[0, -1.42759927, -0.89036525]]
     >>> cell = [[10,0,0], [0,10,0], [0,0,10]]
-    >>> edisp, forces, stress = periodic_d3_correction(n, xyz, cell, func='b-lyp')
+    >>> edisp, forces, stress = periodic_d3_correction(n, xyz, cell, func='blyp')
     >>> edisp
     -0.001003511669637431
     >>> stress
