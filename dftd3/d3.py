@@ -120,7 +120,8 @@ parameters['zero'] = {
 }
 
 # D3(BJ) damping parameters
-# Parameters are as follows: (rs6, s18, rs18 ,s6)
+# Parameters are as follows: (rs6, s18, rs18, s6)
+# otherwise known as         ( s6,  a1,   s8, a2)
 parameters['bj'] = {
     'b1b95':        (1.000, 0.2092, 1.4507, 5.5545),
     'b2gpplyp':     (0.560, 0.0000, 0.2597, 6.3332),
@@ -171,6 +172,8 @@ parameters['bj'] = {
     'tpss':         (1.000, 0.4535, 1.9435, 4.4752),
     'tpss0':        (1.000, 0.3768, 1.2576, 4.5865),
     'tpssh':        (1.000, 0.4529, 2.2382, 4.6550),
+    'b2kplyp':      (0.64,  0.0000, 0.1521, 7.1916),
+    'dsd-pbep86':   (0.418, 0.0000, 0.0000, 5.6500)
 }
 
 # TODO references
