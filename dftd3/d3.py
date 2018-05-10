@@ -224,8 +224,13 @@ def d3_correction(atomic_numbers, atomic_positions, func='pbe', variant='bj'):
 
     if variant in {'bj'}:
         s6, rs6, s18, rs18 = parameters[variant][func]
+    elif variant == 'D2':
+        s18, rs18 = 0.0, 0.0
+        rs6=1.1
+        alp=20.0
+        s6 = parameters[variant][func]
     else:
-        raise NotImplementedError('Only BJ case is currently implemented')
+        raise NotImplementedError('Only BJ damping and D2 are currently implemented')
 
     atomic_numbers = np.array(atomic_numbers, dtype=int)
     atomic_positions = np.array(atomic_positions, dtype=np.float64).T
@@ -291,8 +296,13 @@ def periodic_d3_correction(atomic_numbers, atomic_positions, cell_vectors, func=
 
     if variant in {'bj'}:
         s6, rs6, s18, rs18 = parameters[variant][func]
+    elif variant == 'D2':
+        s18, rs18 = 0.0, 0.0
+        rs6=1.1
+        alp=20.0
+        s6 = parameters[variant][func]
     else:
-        raise NotImplementedError('Only BJ damping is currently implemented')
+        raise NotImplementedError('Only BJ damping or D2 are currently implemented')
 
     atomic_numbers = np.array(atomic_numbers, dtype=int)
     atomic_positions = np.array(atomic_positions, dtype=np.float64).T
